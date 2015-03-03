@@ -1,116 +1,93 @@
 package com.javarush.test.level19.lesson10.home06;
 
-import java.util.LinkedList;
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
-public class Solution
-{
+/* Замена чисел
+1. В статическом блоке инициализировать словарь map парами [число-слово] от 0 до 12 включительно
+Например, 0 - "ноль", 1 - "один", 2 - "два"
+2. Считать с консоли имя файла
+3. Заменить все числа на слова используя словарь map
+4. Результат вывести на экран
+5. Закрыть потоки
 
-    public static void main(String[] args)
+Пример данных:
+Это стоит 1 бакс, а вот это - 12 .
+Переменная имеет имя file1.
+110 - это число.
+
+Пример вывода:
+Это стоит один бакс, а вот это - двенадцать .
+Переменная имеет имя file1.
+110 - это число.
+*/
+
+public class Solution {
+    public static Map<Integer, String> map = new HashMap<Integer, String>();
+
+    static {
+        map.put(0, "ноль");
+        map.put(1, "один");
+        map.put(2, "два");
+        map.put(3, "три");
+        map.put(4, "четыре");
+        map.put(5, "пять");
+        map.put(6, "шесть");
+        map.put(7, "семь");
+        map.put(8, "восемь");
+        map.put(9, "девять");
+        map.put(10, "десять");
+        map.put(11, "одиннадцать");
+        map.put(12, "двенадцать");
+    }
+
+    public static void main(String[] args) throws IOException
+    {
+        PrintStream consoleStream = System.out;
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(byteArrayOutputStream);
+        System.setOut(printStream);
+
+        print();
+
+        String result = byteArrayOutputStream.toString();
+
+        System.setOut(consoleStream);
+
+        String[] strings = result.split(" ");
+        for (int i = 0; i < strings.length; i++)
+            try { if (map.containsKey(Integer.parseInt(strings[i]))) strings[i] = map.get(Integer.parseInt(strings[i])); }
+            catch (Exception e) { /*NOP*/ }
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < strings.length - 1; i++)
+            stringBuilder.append(strings[i]).append(" ");
+        stringBuilder.append(strings[strings.length - 1]);
+
+        System.out.print(stringBuilder.toString());
+    }
+
+    static void print() throws IOException
     {
         Scanner scanner = new Scanner(System.in);
-        int n = scanner.nextInt(), m = scanner.nextInt();
-
-        char table[][] = new char[n][m];
-        int result = 0;
-        LinkedList<int[]> d = new LinkedList<int[]>();
-        for (int i = 0; i < n; i++)
-        {
-            table[i] = scanner.next().toCharArray();
-            for (int j = 0; j < m; j++)
-            {
-                if (table[i][j] == 'D')
-                {
-                    int[] e = {i, j};
-                    d.add(e);
-                }
-            }
-        }
+        String fileName = scanner.nextLine();
         scanner.close();
-        if ((n * m) / 4 < 1)
+
+        FileReader fileReader = new FileReader(fileName);
+        BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+        while (true)
         {
-            System.out.println("Poor Dima!");
-            return;
+            String line = bufferedReader.readLine();
+            if (line == null) break;
+            System.out.println(line);
         }
-        for (int[] x : d)
-        {
-            int count = 0;
-            int a = x[0], b = x[1];
-            while (true)
-            {
-                boolean wasLetter = false, hasAlternateI = false, hasAlternateM = false, hasAlternateA = false, hasAlternateD = false;
-                if (!hasAlternateI && b + 1 < table[a].length && table[a][b + 1] == 'I')
-                    {b += 1; wasLetter=true;}
-                if (b - 1 >= 0 && table[a][b - 1] == 'I')
-                    {if (!wasLetter) {b -= 1; wasLetter=true;} else hasAlternateI = true;}
-                if (a + 1 < table.length && table[a + 1][b] == 'I')
-                    {if (!wasLetter) {a += 1; wasLetter=true;} else hasAlternateI = true;}
-                if (a - 1 > 0 && table[a - 1][b] == 'I')
-                    {if (!wasLetter) {a -= 1; wasLetter=true;} else hasAlternateI = true;}
-                if (!wasLetter) break;
+        bufferedReader.close();
+        fileReader.close();
 
-                wasLetter = false;
-                if (!hasAlternateM && b + 1 < table[a].length && table[a][b + 1] == 'M')
-                    {b += 1; wasLetter=true;}
-                if (b - 1 >= 0 && table[a][b - 1] == 'M')
-                    {b -= 1; wasLetter=true;}
-                if (a + 1 < table.length && table[a + 1][b] == 'M')
-                    {a += 1; wasLetter=true;}
-                if (a - 1 > 0 && table[a - 1][b] == 'M')
-                    {a -= 1; wasLetter=true;}
-                if (!wasLetter) break;
-
-                wasLetter = false;
-                if (!hasAlternateA && b + 1 < table[a].length && table[a][b + 1] == 'A')
-                    {b += 1; wasLetter=true;}
-                if (b - 1 >= 0 && table[a][b - 1] == 'A')
-                    {b -= 1; wasLetter=true;}
-                if (a + 1 < table.length && table[a + 1][b] == 'A')
-                    {a += 1; wasLetter=true;}
-                if (a - 1 > 0 && table[a - 1][b] == 'A')
-                    {a -= 1; wasLetter=true;}
-                if (!wasLetter) break;
-                count++;
-
-                wasLetter = false;
-                if (!hasAlternateD && b + 1 < m && table[a][b + 1] == 'D')
-                {b += 1; wasLetter=true;} else
-                if (b - 1 >= 0 && table[a][b - 1] == 'D')
-                {if (!wasLetter) {b -= 1; wasLetter=true;} else hasAlternateD = true;}
-                if (a + 1 < n && table[a + 1][b] == 'D')
-                {if (!wasLetter) {a += 1; wasLetter=true;} else hasAlternateD = true;}
-                if (a - 1 > 0 && table[a - 1][b] == 'D')
-                {if (!wasLetter) {a -= 1; wasLetter=true;} else hasAlternateD = true;}
-                if (!wasLetter) {
-                    if (hasAlternateI) {
-                        if (b - 1 >= 0 && table[a][b - 1] == 'I')
-                        {if (!wasLetter) {b -= 1; wasLetter=true;} else hasAlternateI = true;}
-                        if (a + 1 < table.length && table[a + 1][b] == 'I')
-                        {if (!wasLetter) {a += 1; wasLetter=true;} else hasAlternateI = true;}
-                        if (a - 1 > 0 && table[a - 1][b] == 'I')
-                        {if (!wasLetter) {a -= 1; wasLetter=true;} else hasAlternateI = true;}
-                    }
-
-
-                    break;
-                }
-
-
-                if (count > result) result = count;
-
-            }
-        }
-        if (result > (n * m) / 4)
-        {
-            System.out.println("Poor Inna!");
-            return;
-        }
-        if (result == 0)
-        {
-            System.out.println("Poor Dima!");
-            return;
-        }
-
-        System.out.println(result);
+        scanner.close();
     }
 }
