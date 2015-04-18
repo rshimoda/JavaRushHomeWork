@@ -10,27 +10,74 @@ package com.javarush.test.level19.lesson10.home07;
 длинное,короткое,аббревиатура
 */
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import com.javarush.test.level19.lesson10.bonus02.FileConsoleWriter;
+
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Solution
-{
+public class Solution {
+    static char table[][];
+    static int m,n;
     public static void main(String[] args) throws IOException
-    {
-        Scanner scanner = new Scanner(new File(args[0]));
-        BufferedWriter fileWriter = new BufferedWriter(new FileWriter(args[1]));
+    {/*
+        ArrayList<String> strings = new ArrayList<String>();
 
-        while (scanner.hasNext())
+        FileReader fileReader = new FileReader(args[0]);
+        BufferedReader bufferedReader = new BufferedReader(fileReader);
+        while (true)
         {
-            String word = scanner.next();
-            if (word.length() > 6)
-                if (scanner.hasNext()) fileWriter.write(word + ",");
-                else fileWriter.write(word);
+            String line = bufferedReader.readLine();
+            if (line == null) break;
+            String[] words = line.split(" ");
+            for (int i = 0; i < words.length; i++)
+                if (words[i].length() > 6) { strings.add(words[i]); strings.add(","); }
+        }
+        bufferedReader.close();
+        fileReader.close();
+
+        FileWriter fileWriter = new FileWriter(args[1]);
+        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
+        strings.remove(strings.size() - 1);
+        for (String x : strings)
+        {
+            bufferedWriter.write(x);
+        }
+        bufferedWriter.close();
+        fileWriter.close();*/
+        Scanner scanner = new Scanner(System.in);
+        n = scanner.nextInt();
+        m = scanner.nextInt();
+        scanner.nextLine();
+
+        table = new char[n][m];
+
+        for (int i = 0; i < n; i++)
+        {
+            table[i] = scanner.nextLine().toCharArray();
         }
         scanner.close();
-        fileWriter.close();
+
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < m; j++)
+                if (table[i][j] == ' ') { way(i, j); break; }
+
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < m; j++)
+                System.out.print(table[i][j]);
+            if (i < n -1) System.out.println();
+        }
+    }
+
+    static void way(int x, int y)
+    {
+        table[x][y] = '.';
+
+        if (x > 0 && table[x-1][y] == ' ') way(x - 1, y);
+        if (y < m && table[x][y+1] == ' ') way(x, y + 1);
+        if (x < n && table[x + 1][y] == ' ') way(x + 1, y);
+        if (y > 0 && table[x][y-1] == ' ') way(x, y - 1);
     }
 }

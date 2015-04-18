@@ -22,48 +22,67 @@ id productName price quantity
 19847983Куртка для сноубордистов, разм10173.991234
 */
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Solution
-{
+public class Solution {
+    public static ArrayList<String> lines = new ArrayList<>();
+    public static int maxId = 0;
+
     public static void main(String[] args) throws Exception
     {
         Scanner scanner = new Scanner(System.in);
-        String fileName = scanner.nextLine();
-        BufferedReader fileReader = new BufferedReader(new FileReader(fileName));
+        File file = new File(scanner.next());
         scanner.close();
 
-        ArrayList<String> lines = new ArrayList<String>();
-        while (fileReader.ready())
+        restoreInfo(file);
+
+        StringBuilder name = new StringBuilder();
+        for (int i = 1; i < args.length-2; i++)
+            name.append(args[i]).append(" ");
+        name.deleteCharAt(name.length() - 1);
+
+        if (args[0].equals("-c"))
+            lines.add(String.format("%-8d%-30s%-8s%-4d", ++maxId, name.toString(), args[args.length-2], Integer.parseInt(args[args.length-1])));
+        else lines.add(String.format("%-8d%-30s%-8s%-4d", Integer.parseInt(args[0]), name.toString(), args[args.length-2], Integer.parseInt(args[args.length-1])));
+
+        write(file);
+    }
+
+    public static void restoreInfo(File file) throws IOException
+    {
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        ArrayList<Integer> ids = new ArrayList<>();
+        while (reader.ready())
         {
-            lines.add(fileReader.readLine());
+            String line = reader.readLine();
+            lines.add(line);
+            String sId = line.substring(0, 8).replaceAll(" ", "");
+
+            try
+            {
+                int id = Integer.valueOf(sId);
+                if (id > maxId)
+                    maxId = id;
+            }
+            catch (Exception e)
+            {
+                //NOP
+            }
         }
+        reader.close();
+    }
 
-        BufferedWriter fileWriter = new BufferedWriter(new FileWriter(fileName));
-        int maxId = Integer.MIN_VALUE;
-        for (String x : lines)
-        {
-            if (x.equals("")) continue;
-            fileWriter.write(String.format("%s%n", x));
-            int id = Integer.parseInt(x.substring(0, 8).replaceAll("[\\p{Space}|\\p{Punct}|\\p{L}]", ""));
-            if (id > maxId) maxId = id;
+    public static void write(File file) throws IOException
+    {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+        int count = 0;
+        for (String x : lines) {
+            writer.write(x);
+            if (count < lines.size() - 1) writer.newLine();
+            count++;
         }
-
-        {
-            String name = args[1];
-            for (int i = 2; i < args.length - 2; i++)
-                name += " " + args[i];
-
-            if(args[0].equals("-c"))
-                fileWriter.write(String.format("%-8.8s%-30.30s%8.8s%4.4s%n", maxId == Integer.MIN_VALUE ? "0" : String.valueOf(++maxId), name, args[args.length - 2], args[args.length - 1]));
-        }
-
-        fileReader.close();
-        fileWriter.close();
+        writer.close();
     }
 }

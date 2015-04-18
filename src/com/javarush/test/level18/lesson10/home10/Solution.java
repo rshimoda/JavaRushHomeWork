@@ -14,62 +14,43 @@ package com.javarush.test.level18.lesson10.home10;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Scanner;
-
-import static java.util.Collections.sort;
+import java.util.TreeSet;
 
 public class Solution {
     public static void main(String[] args) throws IOException
     {
-        ArrayList<String> list = new ArrayList<String>();
         Scanner scanner = new Scanner(System.in);
-        while (true)
+        TreeSet<String> files = new TreeSet<>();
+        LinkedList<String> lines = new LinkedList<>();
+
+        String input = scanner.nextLine();
+        while (!input.equals("end"))
         {
-            String read = scanner.nextLine();
-            if(read.equals("end"))  break;
-            else list.add(read);
+            files.add(input);
+            input = scanner.next();
         }
         scanner.close();
 
-        int p = list.get(0).length(), k = 0;
+        File file = new File(files.first().substring(0, files.first().lastIndexOf(".")));
 
-
-        String parts[] = list.get(0).split("\\.");
-        String file = "";
-        for(int i = 0; i < parts.length; i++)
-            if(!parts[i].startsWith("part"))
-                if(i == parts.length - 2) file+=parts[i];
-                else file+="."+parts[i];
-
-        if(file.startsWith(".")) file = file.substring(1, file.length());
-        sort(list);
-
-        FileOutputStream writer = new FileOutputStream(file);
-        ArrayList<byte[]> buffers = new ArrayList<byte[]>();
-        for(String x : list)
-        {
-            FileInputStream stream = new FileInputStream(x);
-            if(stream.available()>0)
-            {
-                byte buffer[] = new byte[stream.available()];
-                int count = stream.read(buffer);
-                buffers.add(buffer);
-            }
-            stream.close();
+        BufferedReader fileScanner;
+        for (String x : files) {
+            fileScanner = new BufferedReader(new FileReader(x));
+            while (fileScanner.ready())
+                lines.add(fileScanner.readLine());
+            fileScanner.close();
         }
-        int size = 0;
-        for(byte[] x : buffers)
-            size+=x.length;
-        byte[] result = new byte[size];
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+
         int count = 0;
-        for(byte[] x: buffers)
-        {
-            for(int i = 0; i < x.length; i++){
-                result[count] = x[i];
-                count++;
-            }
+        for (String x : lines) {
+            writer.write(x);
+            if (count < lines.size() - 1) writer.newLine();
+            count++;
         }
-        writer.write(result);
         writer.close();
     }
 }
