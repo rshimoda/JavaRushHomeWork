@@ -1,10 +1,7 @@
 package com.javarush.test.level18.lesson10.home08;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 
 /* Нити и байты
 Читайте с консоли имена файлов, пока не будет введено слово "exit"
@@ -15,57 +12,61 @@ import java.util.Scanner;
 */
 
 public class Solution {
-    public static Map<String, Integer> resultMap = new HashMap<String, Integer>();
+  public static Map<String, Integer> resultMap = new HashMap<String, Integer>();
 
-    public static void main(String[] args)
-    {
-        Scanner scanner = new Scanner(System.in);
-        String input = scanner.nextLine();
-        while(! input.equals("exit"))
-        {
-            new ReadThread(input);
-            input = scanner.nextLine();
-        }
-        scanner.close();
+  public static void main(String[] args) {
+    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+    ArrayList<String> list = new ArrayList<String>();
+    try {
+      String fileName;
+
+      while (!(fileName = bufferedReader.readLine()).equals("exit")) {
+        list.add(fileName);
+      }
+      bufferedReader.close();
+      for (String s : list) {
+        ReadThread readThread = new ReadThread(s);
+        readThread.start();
+        readThread.join();
+      }
+    }
+    catch (Exception ignored) {}
+
+    System.out.println(resultMap);
+  }
+
+  public static class ReadThread extends Thread {
+    private String fileName;
+
+    public ReadThread(String fileName) {
+      this.fileName = fileName;
+      //implement constructor body
     }
 
-    public static class ReadThread extends Thread {
-        String file;
-        HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
-        int maxCount = 1, maxByte = 0;
+    // implement file reading here - реализуйте чтение из файла тут
+    public void run() {
+      try {
+        FileInputStream fileInputStream = new FileInputStream(fileName);
+        ArrayList<Integer> list = new ArrayList<Integer>();
+        while (fileInputStream.available() > 0) {
+          int data = fileInputStream.read();
+          list.add(data);
+        }
+        fileInputStream.close();
 
-        public ReadThread(String fileName)
-        {
-            //implement constructor body
-            this.file = fileName;
+        int max = 0;
+        int id = 0;
+        int count;
+
+        for (int a = 0; a < list.size(); a++) {
+          count = Collections.frequency(list, list.get(a));
+          if (count > max) { max = count; id = list.get(a);}
         }
 
-        // implement file reading here - реализуйте чтение из файла тут
-        @Override
-        public void run()
-        {
-            try
-            {
-                FileReader fileReader = new FileReader(file);
-                while (fileReader.ready())
-                {
-                    int x = fileReader.read();
-                    if (map.containsKey(x))
-                    {
-                        map.replace(x, map.get(x) + 1);
-                        if (map.get(x) > maxCount)
-                        {
-                            maxCount = map.get(x);
-                            maxByte = x;
-                        }
-                    } else map.put(x, 1);
-                }
-                fileReader.close();
-            } catch (Exception e) {
-                //NOP
-            }
+        resultMap.put(fileName, id);
 
-                resultMap.put(file, maxByte);
-        }
+      }
+      catch (Exception ignored) {}
     }
+  }
 }

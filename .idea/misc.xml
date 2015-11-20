@@ -7,15 +7,15 @@
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
-        <option value="D:/IdeaProjects/EIS Maven Test/pom.xml" />
-        <option value="D:/IdeaProjects/Test/pom.xml" />
+        <option value="$PROJECT_DIR$/../IdeaProjects/EIS Maven Test/pom.xml" />
+        <option value="$PROJECT_DIR$/../IdeaProjects/Test/pom.xml" />
       </list>
     </option>
   </component>
   <component name="ProjectResources">
     <default-html-doctype>http://www.w3.org/1999/xhtml</default-html-doctype>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" assert-keyword="true" jdk-15="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" default="false" assert-keyword="true" jdk-15="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
   <component name="SvnBranchConfigurationManager">
