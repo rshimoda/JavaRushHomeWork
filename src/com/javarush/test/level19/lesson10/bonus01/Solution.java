@@ -1,6 +1,9 @@
 package com.javarush.test.level19.lesson10.bonus01;
 
-import java.util.LinkedList;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /* Отслеживаем изменения
@@ -27,65 +30,57 @@ ADDED строка4
 */
 
 public class Solution {
+    public static List<LineItem> lines = new ArrayList<LineItem>();
 
-    static LinkedList<Integer> primeNums = new LinkedList<Integer>();
-    static {
-        primeNums.add(2);
+    public static void main(String[] args) throws FileNotFoundException {
+        Scanner scanner = new Scanner(System.in);
 
-        for(int i = 3; i < 100000; i++)
-        {
-            boolean isPrime = true;
-            for (int j = 2; j * j <= i; j++)
-                if (i%j == 0) { isPrime = false; break; }
-            if(isPrime) primeNums.add(i);
+        ArrayList<String> file1 = new ArrayList<>(), file2 = new ArrayList<>();
+
+        Scanner fileScanner1 = new Scanner(new File(scanner.nextLine())), fileScanner2 = new Scanner(new File(scanner.nextLine()));
+        while (fileScanner1.hasNext() || fileScanner2.hasNext()) {
+            if (fileScanner1.hasNext()) file1.add(fileScanner1.nextLine());
+            if (fileScanner2.hasNext()) file2.add(fileScanner2.nextLine());
+        }
+        fileScanner1.close();
+        fileScanner2.close();
+
+        while (file1.size() > 0) {
+            if (file1.get(0).equals(file2.get(0))) {
+                lines.add(new LineItem(Type.SAME, file1.get(0)));
+                file1.remove(0);
+                file2.remove(0);
+            } else if (file1.get(0).equals(file2.get(1))) {
+                lines.add(new LineItem(Type.ADDED, file2.get(0)));
+                file2.remove(0);
+            } else {
+                lines.add(new LineItem(Type.REMOVED, file1.get(0)));
+                file1.remove(0);
+            }
+        }
+        if (file2.size() > 0) {
+            lines.add(new LineItem(Type.ADDED, file2.get(0)));
+        }
+
+        for (LineItem x : lines) {
+            System.out.println(x.type.toString() + " " + x.line);
         }
     }
 
-    public static void main(String[] args)
-    {
-        Scanner scanner = new Scanner(System.in);
-        int n = scanner.nextInt();
-        int m = scanner.nextInt();
 
-        int nums[][] = new int[n][m];
+    public static enum Type {
+        ADDED,        //добавлена новая строка
+        REMOVED,      //удалена строка
+        SAME          //без изменений
+    }
 
-        //Input
-        for(int i = 0; i < n; i++)
-            for (int j = 0; j < m; j++)
-                nums[i][j] = scanner.nextInt();
-        scanner.close();
+    public static class LineItem {
+        public Type type;
+        public String line;
 
-        //Check-up
-        for(int i = 0; i < n; i++) {
-            boolean isLinePrime = true;
-            boolean isColumPrime = true;
-
-            for (int j = 0; j < m; j++)
-            {
-                if(!primeNums.contains(nums[i][j])) isLinePrime = false;
-                if(j >= n) { isColumPrime = false; break; }
-                if(!primeNums.contains(nums[j][i])) isColumPrime = false;
-            }
-            if(isLinePrime || isColumPrime) { System.out.println("0"); return; }
+        public LineItem(Type type, String line) {
+            this.type = type;
+            this.line = line;
         }
-
-
-        int min = Integer.MAX_VALUE;
-
-        //Lines/Colums checker
-        for(int i = 0; i < n; i++) {
-            int counterLine = 0, counterCol = 0;
-            for (int j = 0; j < m; j++) {
-                int x = nums[i][j];
-                while (!primeNums.contains(x)) { counterLine++; x++; }
-
-                if(j >= n) break;
-                x = nums[j][i];
-                while (!primeNums.contains(x)) { counterCol++; x++; }
-            }
-            if(counterCol < counterLine) { if(counterCol < min ) min = counterCol; } else { if (counterLine < min) min = counterLine; }
-        }
-
-        System.out.println(min);
     }
 }
