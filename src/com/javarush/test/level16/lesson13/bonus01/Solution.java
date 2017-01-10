@@ -1,7 +1,7 @@
 package com.javarush.test.level16.lesson13.bonus01;
 
-import com.javarush.test.level16.lesson13.bonus01.common.ImageReader;
-import com.javarush.test.level16.lesson13.bonus01.common.ImageTypes;
+//import com.javarush.test.level16.lesson13.bonus01.common.ImageReader;
+//import com.javarush.test.level16.lesson13.bonus01.common.ImageTypes;
 
 /* Factory method pattern
 1. Внимательно посмотри, какие классы у тебя есть.
@@ -15,7 +15,7 @@ import com.javarush.test.level16.lesson13.bonus01.common.ImageTypes;
 */
 
 public class Solution {
-    public static void main(String[] args) {
-        ImageReader reader = ImageReaderFactory.getReader(ImageTypes.JPG);
-    }
+//    public static void main(String[] args) {
+//        ImageReader reader = ImageReaderFactory.getReader(ImageTypes.JPG);
+//    }
 }
